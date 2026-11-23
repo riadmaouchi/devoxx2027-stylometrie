@@ -1,0 +1,131 @@
+{
+  "o1 — Ouverture : la signature en six nombres": {
+    "scope": "python",
+    "prefix": "o1",
+    "body": [
+      "def signature(src):",
+      "    lignes = [l for l in src.split('\\\\n') if l.strip()]",
+      "    n = max(len(lignes), 1)",
+      "    noms = re.findall(r'\\\\b([a-zA-Z_][a-zA-Z0-9_]+)\\\\b', src); nn = max(len(noms), 1)",
+      "    return {",
+      "        'camelCase'      : len(re.findall(r'[a-z][A-Z]', src)) / nn,",
+      "        'snake_case'     : len([x for x in noms if '_' in x and x == x.lower() and len(x) > 2]) / nn,",
+      "        'commentaires'   : sum(1 for l in lignes if l.strip().startswith('#')) / n,",
+      "        '== None'        : len(re.findall(r'==\\\\s*None', src)) / n,",
+      "        'range(len(...))': len(re.findall(r'range\\\\s*\\\\(\\\\s*len\\\\s*\\\\(', src)) / n,",
+      "        'lignes'         : n,",
+      "    }",
+      "",
+      "comparer(signature)$0"
+    ],
+    "description": "Ouverture : la signature en six nombres"
+  },
+  "l1a — Live 1 : les trois gestes": {
+    "scope": "python",
+    "prefix": "l1a",
+    "body": [
+      "# GESTE 1 — une liste : les 41 tokens les plus frequents",
+      "MOTS = [t for t, _ in Counter(t for d in DEVS for t in TOKENS[d]).most_common(41)]",
+      "",
+      "# GESTE 2 — compter, normaliser : un passage devient une direction",
+      "def vecteur(toks):",
+      "    c = Counter(toks); n = max(len(toks), 1)",
+      "    v = np.array([c[m] / n for m in MOTS]); k = np.linalg.norm(v)",
+      "    return v / k if k > 0 else v",
+      "",
+      "# GESTE 3 — comparer deux directions",
+      "def dist(a, b):",
+      "    return 1 - float(np.dot(a, b))          # 1 - cosinus",
+      "",
+      "trois_gestes(MOTS, vecteur, dist)$0"
+    ],
+    "description": "Live 1 : les trois gestes"
+  },
+  "l1b — Live 1 : le critere de Juola": {
+    "scope": "python",
+    "prefix": "l1b",
+    "body": [
+      "def juola(mystere):",
+      "    rangs = {d: [] for d in DEVS}",
+      "    for nom, test in TESTS:                 # les 4 tests de 2013",
+      "        d = {k: cosinus(test(mystere), test(REF[k])) for k in DEVS}",
+      "        for rang, k in enumerate(sorted(d, key=d.get), 1):",
+      "            rangs[k].append(rang)           # on garde le RANG",
+      "    return rangs",
+      "",
+      "tableau_des_rangs(juola(MYSTERE))$0"
+    ],
+    "description": "Live 1 : le critere de Juola"
+  },
+  "l1c — Live 1 : les douze extraits": {
+    "scope": "python",
+    "prefix": "l1c",
+    "body": [
+      "tous_les_extraits(juola)$0"
+    ],
+    "description": "Live 1 : les douze extraits"
+  },
+  "l1d — Live 1 : la courbe": {
+    "scope": "python",
+    "prefix": "l1d",
+    "body": [
+      "courbe()$0"
+    ],
+    "description": "Live 1 : la courbe"
+  },
+  "l2a — Live 2 : contenu contre mots-fonction": {
+    "scope": "python",
+    "prefix": "l2a",
+    "body": [
+      "contenu  = [w for w, _ in POOL.most_common(600) if w not in GRAMMATICAUX and len(w) > 3][:60]",
+      "fonction = [w for w, _ in POOL.most_common(400) if w in FONCTIONNELS][:60]",
+      "",
+      "duel(contenu, fonction)$0"
+    ],
+    "description": "Live 2 : contenu contre mots-fonction"
+  },
+  "l2b — Live 2 : ce que chacun a appris": {
+    "scope": "python",
+    "prefix": "l2b",
+    "body": [
+      "ce_qu_il_a_appris(contenu, fonction)$0"
+    ],
+    "description": "Live 2 : ce que chacun a appris"
+  },
+  "l3a — Live 3 : les dix features": {
+    "scope": "python",
+    "prefix": "l3a",
+    "body": [
+      "def sig(src):",
+      "    lines = src.split('\\\\n')",
+      "    ne    = [l for l in lines if l.strip()]",
+      "    n     = max(len(ne), 1)",
+      "    names = re.findall(r'\\\\b([a-zA-Z_][a-zA-Z0-9_]+)\\\\b', src)",
+      "    nn    = max(len(names), 1)",
+      "    nfun  = max(len(re.findall(r'\\\\bdef\\\\s', src)), 1)",
+      "    return [",
+      "        len(re.findall(r'[a-z][A-Z]', src)) / nn,                                    # camelCase",
+      "        len([x for x in names if '_' in x and x == x.lower() and len(x) > 2]) / nn,  # snake_case",
+      "        sum(1 for l in lines if l.strip().startswith('#')) / n,                      # commentaires",
+      "        len(re.findall(r':\\\\s*(int|str|float|bool|list|dict|tuple)', src)) / n,       # type hints",
+      "        len(re.findall(r'\"\"\"', src)) / n,                                            # docstrings",
+      "        len(re.findall(r'\\\\[.+for .+in .+\\\\]', src)) / n,                              # list comp",
+      "        len(re.findall(r'==\\\\s*None|!=\\\\s*None', src)) / n,                            # == None",
+      "        len(re.findall(r'range\\\\s*\\\\(\\\\s*len\\\\s*\\\\(', src)) / n,                          # range(len())",
+      "        len(re.findall(r'\\\\bwith\\\\s+open', src)) / n,                                  # with open",
+      "        min(len(ne) / nfun / 12, 1.0),                                               # lignes/fonction",
+      "    ]",
+      "",
+      "empreintes(sig)$0"
+    ],
+    "description": "Live 3 : les dix features"
+  },
+  "l3b — Live 3 : la revelation du fichier D": {
+    "scope": "python",
+    "prefix": "l3b",
+    "body": [
+      "reveler()$0"
+    ],
+    "description": "Live 3 : la revelation du fichier D"
+  }
+}

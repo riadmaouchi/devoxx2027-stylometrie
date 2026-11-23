@@ -1,0 +1,9 @@
+{
+  "editor.fontSize": 20,
+  "terminal.integrated.fontSize": 18,
+  "editor.minimap.enabled": false,
+  "editor.tabCompletion": "on",
+  "editor.inlineSuggest.enabled": false,
+  "github.copilot.enable": { "*": false },
+  "jupyter.notebookFileRoot": "${fileDirname}"
+}
